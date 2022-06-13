@@ -1,17 +1,17 @@
-const { User, Book } = require('../models');
+const { User } = require('../models');
 const { signToken } = require('../utils/auth');
 const { AuthenticationError } = require('apollo-server-express');
 
 const resolvers = {
   Query: {
-    // user: async (parent, args, context) => {
-    //   return User.findOne({
-    //     $or: [
-    //       { _id: context.user ? context.user._id : args.id },
-    //       { username: args.username },
-    //     ],
-    //   }).populate('savedBooks');
-    // },
+    user: async (parent, args, context) => {
+      return User.findOne({
+        $or: [
+          { _id: context.user ? context.user._id : args.id },
+          { username: args.username },
+        ],
+      }).populate('savedBooks');
+    },
   },
 
   Mutation: {
@@ -34,15 +34,44 @@ const resolvers = {
       return { token, user };
     },
 
-    saveBook: async (parent, args, context) => {
+    saveBook: async (
+      parent,
+      { authors, description, bookId, image, link, title },
+      context
+    ) => {
       if (context.user) {
         const updatedUser = await User.findOneAndUpdate(
-          { id: context.user.id },
-          { $addToSet: { savedBooks: args.bookId } },
+          { _id: context.user._id },
+          {
+            $addToSet: {
+              savedBooks: { authors, description, bookId, image, link, title },
+            },
+          },
           { new: true }
-        ).populate('savedBooks');
+        );
+
+        return updatedUser;
       }
-      return updatedUser;
+
+      throw new AuthenticationError('You need to be logged in!');
+    },
+
+    deleteBook: async (parent, { bookId }, context) => {
+      if (context.user) {
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          {
+            $pull: {
+              savedBooks: { bookId },
+            },
+          },
+          { new: true }
+        );
+
+        return updatedUser;
+      }
+
+      throw new AuthenticationError('You need to be logged in!');
     },
   },
 };

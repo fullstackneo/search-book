@@ -59,7 +59,7 @@ const SavedBooks = () => {
 
       // if (!response.ok) {
       //   throw new Error('something went wrong!');
-      await deleteBook(bookId);
+      await deleteBook({ variables: bookId });
 
       // const updatedUser = await response.json();
       // setUserData(updatedUser);

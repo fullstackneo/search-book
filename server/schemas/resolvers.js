@@ -1,4 +1,4 @@
-const { User } = require('../models');
+const { User, Book } = require('../models');
 const resolvers = {
   Query: {
     user: async (parent, args) => {
@@ -11,6 +11,16 @@ const resolvers = {
     addUser: async (parent, args) => {
       const user = await User.create(args);
       return user;
+    },
+    saveBook: async (parent, args, context) => {
+      if (context.user) {
+        const updatedUser = await User.findOneAndUpdate(
+          { id: context.user.id },
+          { $addToSet: { savedBooks: args.bookId } },
+          { new: true }
+        ).populate('savedBooks');
+      }
+      return updatedUser;
     },
   },
 };

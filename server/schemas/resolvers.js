@@ -16,6 +16,7 @@ const resolvers = {
       if (!foundUser) {
         throw new AuthenticationError('Incorrect credentials');
       }
+      return foundUser;
     },
   },
 

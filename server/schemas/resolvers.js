@@ -4,19 +4,28 @@ const { AuthenticationError } = require('apollo-server-express');
 
 const resolvers = {
   Query: {
+    // find info for a user or logged user by id or username
     user: async (parent, args, context) => {
-      return User.findOne({
+      const foundUser = User.findOne({
         $or: [
           { _id: context.user ? context.user._id : args.id },
           { username: args.username },
         ],
       }).populate('savedBooks');
+
+      if (!foundUser) {
+        throw new AuthenticationError('Incorrect credentials');
+      }
     },
   },
 
   Mutation: {
+    // create a new user
     addUser: async (parent, args) => {
       const user = await User.create(args);
+      if (!user) {
+        throw new AuthenticationError('Cannot add user');
+      }
       const token = signToken(user);
       return { token, user };
     },
@@ -28,23 +37,20 @@ const resolvers = {
       }
       const correctPw = await user.isCorrectPassword(password);
       if (!correctPw) {
-        throw new AuthenticationError('incorrect credentials');
+        throw new AuthenticationError('Incorrect credentials');
       }
       const token = signToken(user);
       return { token, user };
     },
 
-    saveBook: async (
-      parent,
-      { authors, description, bookId, image, link, title },
-      context
-    ) => {
+    // add a book with its info into savedBook
+    saveBook: async (parent, args, context) => {
       if (context.user) {
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
           {
             $addToSet: {
-              savedBooks: { authors, description, bookId, image, link, title },
+              savedBooks: args,
             },
           },
           { new: true }
@@ -56,6 +62,7 @@ const resolvers = {
       throw new AuthenticationError('You need to be logged in!');
     },
 
+    // remove a book by bookId from savedBook
     deleteBook: async (parent, { bookId }, context) => {
       if (context.user) {
         const updatedUser = await User.findOneAndUpdate(
@@ -67,10 +74,8 @@ const resolvers = {
           },
           { new: true }
         );
-
         return updatedUser;
       }
-
       throw new AuthenticationError('You need to be logged in!');
     },
   },

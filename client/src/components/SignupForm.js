@@ -38,7 +38,7 @@ const SignupForm = () => {
       // if (!response.ok) {
       //   throw new Error('something went wrong!');
       // }
-      console.log(userFormData);
+      // console.log(userFormData);
       const {data} = await addUser({ variables: userFormData });
       const { token, user } = data.addUser;
       console.log(user);
@@ -126,6 +126,7 @@ const SignupForm = () => {
         >
           Submit
         </Button>
+        {error && <p>Signup failed</p>}
       </Form>
     </>
   );

@@ -54,7 +54,7 @@ const resolvers = {
               savedBooks: args,
             },
           },
-          { new: true }
+          { new: true, runValidators: true }
         );
 
         return updatedUser;
@@ -73,7 +73,7 @@ const resolvers = {
               savedBooks: { bookId },
             },
           },
-          { new: true }
+          { new: true, runValidators: true }
         );
         return updatedUser;
       }

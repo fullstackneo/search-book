@@ -64,7 +64,6 @@ export const DELETE_BOOK = gql`
     deleteBook(bookId: $bookId) {
       _id
       savedBooks {
-        _id
         description
         bookId
       }

@@ -43,7 +43,7 @@ const SearchBooks = () => {
       if (!response.ok) {
         throw new Error('something went wrong!');
       }
-
+      console.log(1);
       const { items } = await response.json();
 
       const bookData = items.map(book => ({
@@ -53,10 +53,12 @@ const SearchBooks = () => {
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
       }));
-
+      console.log(bookData);
+      console.log(2);
       setSearchedBooks(bookData);
-
+      console.log(3);
       setSearchInput('');
+      console.log(4);
     } catch (err) {
       console.error(err);
     }
@@ -136,22 +138,22 @@ const SearchBooks = () => {
                   <Card.Title>{book.title}</Card.Title>
                   <p className="small">Authors: {book.authors}</p>
                   <Card.Text>{book.description}</Card.Text>
-                  {Auth.loggedIn() &&
-                    (
-                      <Button
-                        disabled={savedBookIds?.some(
-                          savedBookId => savedBookId === book.bookId
-                        )}
-                        className="btn-block btn-info"
-                        onClick={() => handleSaveBook(book.bookId)}
-                      >
-                        {savedBookIds?.some(
-                          savedBookId => savedBookId === book.bookId
-                        )
-                          ? 'This book has already been saved!'
-                          : 'Save this Book!'}
-                      </Button>
-                    )`${error}&& <div>Savebook faileed</div>`}
+                  {Auth.loggedIn() && (
+                    <Button
+                      disabled={savedBookIds?.some(
+                        savedBookId => savedBookId === book.bookId
+                      )}
+                      className="btn-block btn-info"
+                      onClick={() => handleSaveBook(book.bookId)}
+                    >
+                      {savedBookIds?.some(
+                        savedBookId => savedBookId === book.bookId
+                      )
+                        ? 'This book has already been saved!'
+                        : 'Save this Book!'}
+                    </Button>
+                  )}
+                  {error && <div>Savebook failed</div>}
                 </Card.Body>
               </Card>
             );

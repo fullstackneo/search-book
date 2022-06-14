@@ -43,7 +43,7 @@ const SearchBooks = () => {
       if (!response.ok) {
         throw new Error('something went wrong!');
       }
-      console.log(1);
+ 
       const { items } = await response.json();
 
       const bookData = items.map(book => ({
@@ -54,11 +54,11 @@ const SearchBooks = () => {
         image: book.volumeInfo.imageLinks?.thumbnail || '',
       }));
       console.log(bookData);
-      console.log(2);
+
       setSearchedBooks(bookData);
-      console.log(3);
+
       setSearchInput('');
-      console.log(4);
+
     } catch (err) {
       console.error(err);
     }

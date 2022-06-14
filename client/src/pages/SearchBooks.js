@@ -58,13 +58,14 @@ const SearchBooks = () => {
       }
 
       const { items } = await response.json();
-
+      console.log(items);
       const bookData = items.map(book => ({
         bookId: book.id,
         authors: book.volumeInfo.authors || ['No author to display'],
         title: book.volumeInfo.title,
         description: book.volumeInfo.description,
         image: book.volumeInfo.imageLinks?.thumbnail || '',
+        link: book.volumeInfo.previewLink || 'https://books.google.com/',
       }));
       console.log(bookData);
 
@@ -138,7 +139,14 @@ const SearchBooks = () => {
         <CardColumns>
           {searchedBooks.map(book => {
             return (
-              <Card key={book.bookId} border="dark">
+              <Card
+                key={book.bookId}
+                border="dark"
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  window.open(book.link);
+                }}
+              >
                 {book.image ? (
                   <Card.Img
                     src={book.image}
@@ -146,6 +154,7 @@ const SearchBooks = () => {
                     variant="top"
                   />
                 ) : null}
+
                 <Card.Body>
                   <Card.Title>{book.title}</Card.Title>
                   <p className="small">Authors: {book.authors}</p>
@@ -156,7 +165,10 @@ const SearchBooks = () => {
                         savedBookId => savedBookId === book.bookId
                       )}
                       className="btn-block btn-info"
-                      onClick={() => handleSaveBook(book.bookId)}
+                      onClick={event => {
+                        event.stopPropagation();
+                        handleSaveBook(book.bookId);
+                      }}
                     >
                       {savedBookIds?.some(
                         savedBookId => savedBookId === book.bookId

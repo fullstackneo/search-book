@@ -44,11 +44,27 @@ const SavedBooks = () => {
 
   //   getUserData();
   // }, [userDataLength]);
-  const { loading, userData } = useQuery(QUERY_ME);
+  const { loading, data } = useQuery(QUERY_ME);
   const [deleteBook, { error }] = useMutation(DELETE_BOOK);
+  console.log(DELETE_BOOK);
+  
+  console.log(deleteBook);
+  // console.log(error)
+
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
+  // if data isn't here yet, say so
+  if (loading) {
+    return <h2>LOADING...</h2>;
+  }
+
+  const userData = data.user;
+  console.log(userData);
+  // console.log(data.user);
+  // console.log(data.user.savedBooks);
+
   const handleDeleteBook = async bookId => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
+    console.log(token);
 
     if (!token) {
       return false;
@@ -56,11 +72,11 @@ const SavedBooks = () => {
 
     try {
       // const response = await deleteBook(bookId, token);
-
       // if (!response.ok) {
       //   throw new Error('something went wrong!');
-      await deleteBook({ variables: bookId });
+      const { data } = await deleteBook({ variables:{ bookId} });
 
+      // console.log(data);
       // const updatedUser = await response.json();
       // setUserData(updatedUser);
       // upon success, remove book's id from localStorage
@@ -69,11 +85,6 @@ const SavedBooks = () => {
       console.error(err);
     }
   };
-
-  // if data isn't here yet, say so
-  if (loading) {
-    return <h2>LOADING...</h2>;
-  }
 
   return (
     <>

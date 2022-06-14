@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client';
+
 import React from 'react';
 import {
   Jumbotron,
@@ -77,7 +78,14 @@ const SavedBooks = () => {
         <CardColumns>
           {userData.savedBooks.map(book => {
             return (
-              <Card key={book.bookId} border="dark">
+              <Card
+                key={book.bookId}
+                border="dark"
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  window.open(book.link);
+                }}
+              >
                 {book.image ? (
                   <Card.Img
                     src={book.image}
@@ -85,13 +93,17 @@ const SavedBooks = () => {
                     variant="top"
                   />
                 ) : null}
+
                 <Card.Body>
                   <Card.Title>{book.title}</Card.Title>
                   <p className="small">Authors: {book.authors}</p>
                   <Card.Text>{book.description}</Card.Text>
                   <Button
                     className="btn-block btn-danger"
-                    onClick={() => handleDeleteBook(book.bookId)}
+                    onClick={event => {
+                      event.stopPropagation();
+                      handleDeleteBook(book.bookId);
+                    }}
                   >
                     Delete this Book!
                   </Button>

@@ -15,7 +15,6 @@ import { DELETE_BOOK } from '../utils/mutations';
 import { QUERY_ME } from '../utils/queries';
 
 const SavedBooks = () => {
-
   const { loading, data } = useQuery(QUERY_ME);
   const [deleteBook, { error }] = useMutation(DELETE_BOOK);
 
@@ -96,7 +95,7 @@ const SavedBooks = () => {
                   >
                     Delete this Book!
                   </Button>
-                  `${error} && <div>Deletion failed</div>`
+                  {error && <div>Deletion failed</div>}
                 </Card.Body>
               </Card>
             );

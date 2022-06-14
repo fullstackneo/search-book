@@ -10,9 +10,10 @@ import {
 } from 'react-bootstrap';
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
-import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
-import { useMutation } from '@apollo/client';
+// import { saveBookIds } from '../utils/localStorage';
+import { useMutation, useQuery } from '@apollo/client';
 import { SAVE_BOOK } from '../utils/mutations';
+import { QUERY_ME } from '../utils/queries';
 
 const SearchBooks = () => {
   // create state for holding returned google api data
@@ -21,18 +22,30 @@ const SearchBooks = () => {
   const [searchInput, setSearchInput] = useState('');
 
   // create state to hold saved bookId values
-  const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
+  const [savedBookIds, setSavedBookIds] = useState([]);
   const [savebook, { error }] = useMutation(SAVE_BOOK);
+  const { loading, data } = useQuery(QUERY_ME);
+
   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
   // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
   useEffect(() => {
-    return () => saveBookIds(savedBookIds);
-  });
+    // return () => saveBookIds(savedBookIds);
+    // savedBooks to localStorage for each user
+    if (data) {
+      const bookList = data?.user?.savedBooks.map(item => item.bookId);
+      console.log(bookList);
+
+      if (bookList) {
+        console.log('ok');
+        // saveBookIds(bookList);
+        setSavedBookIds(bookList);
+      }
+    }
+  }, [loading, data]);
 
   // create method to search for books and set state on form submit
   const handleFormSubmit = async event => {
     event.preventDefault();
-
     if (!searchInput) {
       return false;
     }
@@ -43,7 +56,7 @@ const SearchBooks = () => {
       if (!response.ok) {
         throw new Error('something went wrong!');
       }
- 
+
       const { items } = await response.json();
 
       const bookData = items.map(book => ({
@@ -58,7 +71,6 @@ const SearchBooks = () => {
       setSearchedBooks(bookData);
 
       setSearchInput('');
-
     } catch (err) {
       console.error(err);
     }

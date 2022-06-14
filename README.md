@@ -6,7 +6,7 @@
 
 ## Demo
 
-![image](https://github.com/fullstackneo/portfolio/blob/main/src/assets/screenshots/demo.gif)
+![image](https://github.com/fullstackneo/search-book/blob/main/client/src/assets/screenshots/demo.gif)
 
 ## Link
 
@@ -18,6 +18,7 @@
 - MongoDB
 - Graphql
 - React
+- Node
 - Express
 
 ## Contact
